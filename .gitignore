@@ -1,0 +1,15 @@
+# Secrets and environment files
+.env
+.env.*
+*.env
+
+# n8n local data
+.n8n/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Operating system files
+.DS_Store
+Thumbs.db
