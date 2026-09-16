@@ -1,0 +1,775 @@
+{
+  "name": "DM - Unified Intake Router Sandbox",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dm-intake-sandbox",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -592,
+        -16
+      ],
+      "id": "91645fd4-d648-4852-9f7e-f6e3408ced12",
+      "name": "Webhook",
+      "webhookId": "417cce51-671a-4f8c-b97e-576bbc39c104"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e5d62c7a-0456-4523-a51d-a4efc47978a8",
+              "leftValue": "={{$json.body.name}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "bdc4c6d6-c2cb-48f3-97c8-7ce7ed9cbfe2",
+              "leftValue": "={{$json.body.phone}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "9a7f7a1e-25ee-44fb-a558-755408ac08fb",
+              "leftValue": "={{$json.body.source}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "3020153d-e636-44ff-a3ed-1b6132c29717",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.body.message}}",
+                    "rightValue": "book",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "90fa421f-5ab5-4d28-8bde-580f6cff0872"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Booking "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dd143f58-1791-4963-a4dc-65f77a7a5c68",
+                    "leftValue": "={{$json.body.message}}",
+                    "rightValue": "book",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notContains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "General Inquiry "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        -112
+      ],
+      "id": "560b7557-9226-4a40-85b8-e3f84e8cec1b",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblaRiZuOj2nM6a76",
+          "mode": "list",
+          "cachedResultName": "Intake Leads",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblaRiZuOj2nM6a76"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SMS Consent": "={{$json.body.smsConsent}}",
+            "Name": "={{$json.body.name}}",
+            "Phone": "={{$json.body.phone}}",
+            "Email": "={{$json.body.email}}",
+            "source": "={{$json.body.source}}",
+            "Service": "={{$json.body.service}}",
+            "Message ": "={{$json.body.message}}",
+            "Route": "Booking ",
+            "received at": "={{ $now.toISO() }}",
+            "Status": "New"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Message ",
+              "displayName": "Message ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SMS Consent",
+              "displayName": "SMS Consent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Route",
+              "displayName": "Route",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Twilio Message SID",
+              "displayName": "Twilio Message SID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "received at",
+              "displayName": "received at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "needs attention",
+              "displayName": "needs attention",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        -192
+      ],
+      "id": "3b604f3f-fbd2-4ff6-9349-a4a3dcbcbf8f",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8570adf2-da13-497c-80d3-86a704a2d6ac",
+              "leftValue": "={{$json.fields[\"SMS Consent\"]}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        -192
+      ],
+      "id": "0af1d7d1-be95-4b4f-b5f0-5848f25d8c80",
+      "name": "SMS Consent"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "+32471235964",
+        "message": "sms_appointment_reminders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -192
+      ],
+      "id": "0ba5b269-cbad-4a00-92ce-74a1412e40b3",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblaRiZuOj2nM6a76",
+          "mode": "list",
+          "cachedResultName": "Intake Leads",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblaRiZuOj2nM6a76"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SMS Consent": false,
+            "id": "={{ $('Create a record').item.json.id }}",
+            "Twilio Message SID": "={{$json.sid}}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Message ",
+              "displayName": "Message ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SMS Consent",
+              "displayName": "SMS Consent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Route",
+              "displayName": "Route",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Twilio Message SID",
+              "displayName": "Twilio Message SID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1408,
+        -192
+      ],
+      "id": "96926afb-3562-4ada-8b21-15c73e628caf",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblMj9FySyKtPZNPA",
+          "mode": "list",
+          "cachedResultName": "Client configuration",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblMj9FySyKtPZNPA"
+        },
+        "filterByFormula": "{Client ID} = \"test-med-spa-001\"",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        -16
+      ],
+      "id": "c0be8a4d-b8e9-438d-9160-0b0bf3eacdcf",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblMj9FySyKtPZNPA",
+          "mode": "list",
+          "cachedResultName": "Client configuration",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblMj9FySyKtPZNPA"
+        },
+        "filterByFormula": "{Client ID} = \"test-med-spa-001\"",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        -16
+      ],
+      "id": "a6392007-fd57-4194-b43a-179e6006aa30",
+      "name": "Get Client Configuration",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2b81c09c-1b0c-43b8-8910-4d9db235d2c5",
+              "leftValue": "={{$json.fields[\"Intake Router\"]}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -144,
+        -16
+      ],
+      "id": "08471e14-12cd-4f87-8787-3cfa47aadca7",
+      "name": "Intake Router Enabled?"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Client Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "SMS Consent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS Consent": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Client Configuration": {
+      "main": [
+        [
+          {
+            "node": "Intake Router Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intake Router Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "97bdd97d-c351-4ecf-ad1e-38b0c6fed7ca",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e69849f355253cf2b8ec15962bc0b86f6dc0e1476d5b65f1f9784f0593f144c3"
+  },
+  "nodeGroups": [],
+  "id": "1ahW6NyhSIx8wdlf",
+  "tags": []
+}

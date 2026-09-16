@@ -1,0 +1,407 @@
+{
+  "name": "03 Maintenance Rebooking Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "maintenance-rebooking",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7cf88900-f239-4263-90f4-4a5065a2fc88",
+      "name": "Webhook",
+      "webhookId": "80c42028-6e4f-4e88-b3a6-ac57eb8f2774"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblXNCyxnVHCptTTQ",
+          "mode": "list",
+          "cachedResultName": "Treatment Config",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblXNCyxnVHCptTTQ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "b181d384-786a-4d17-817f-d139a4d9e327",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ef109b3d-b14d-4e6d-83e9-538512edc855",
+              "leftValue": "={{ $json.fields.Treatment.toLowerCase().trim() }}",
+              "rightValue": "={{ $('Webhook').first().json.body.treatment.toLowerCase().trim() }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "id": "2d1e82ba-04f1-491e-a96b-31062902ebbc",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "e356ad11-7c1b-48e2-b26a-87734404858b",
+      "name": "Wait",
+      "webhookId": "868d3090-857b-451d-ad51-d0ce6511900b"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "={{ $('Webhook').first().json.body.phone }}",
+        "message": "sms_appointment_reminders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "7d00d05e-76eb-4cca-a656-9f1a635ac64c",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldY7eJwsrvAsmor",
+          "mode": "list",
+          "cachedResultName": "Maintenance Log",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tbldY7eJwsrvAsmor"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client": "={{ $('Webhook').first().json.body.client_name }}",
+            "Phone": "={{ $('Webhook').first().json.body.phone }}",
+            "treatment": "={{ $('Filter').first().json.fields.Treatment }}",
+            "reminder days": "={{ $('Filter').first().json.fields[\"Reminder days\"] }}",
+            "Reminder sent at": "={{ $now.toISO() }}",
+            "status": "Reminder Sent"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Client",
+              "displayName": "Client",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "treatment",
+              "displayName": "treatment",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reminder days",
+              "displayName": "reminder days",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reminder sent at",
+              "displayName": "Reminder sent at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "99f342a2-3f16-4815-a45e-2f97c5647a55",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblMj9FySyKtPZNPA",
+          "mode": "list",
+          "cachedResultName": "Client configuration",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblMj9FySyKtPZNPA"
+        },
+        "filterByFormula": "{Client ID} = \"test-med-spa-001\"",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "aa8f9c4b-e273-41a4-b0c7-08a11107b191",
+      "name": "Get Client Configuration",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6aae484c-c4e5-4fe6-9133-929242000332",
+              "leftValue": "={{$json.fields[\"module 3\"]}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "27b39cf1-c3f0-48e6-b653-743b12ddfe6e",
+      "name": "Module 3 Enabled?"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Client Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Client Configuration": {
+      "main": [
+        [
+          {
+            "node": "Module 3 Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Module 3 Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0e579ee6-8540-42a0-86af-6eff0f1ff117",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e69849f355253cf2b8ec15962bc0b86f6dc0e1476d5b65f1f9784f0593f144c3"
+  },
+  "nodeGroups": [],
+  "id": "jpF7r0TnPQjSGca9",
+  "tags": []
+}

@@ -1,0 +1,447 @@
+{
+  "name": "04 — Post-Treatment Review & Retention",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "post-treatment",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "37705030-4594-49c5-a108-09244e9cafef",
+      "name": "Webhook",
+      "webhookId": "cd932abc-28d6-43e0-a583-3201c7a9ee00"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "6cbc9886-2aa7-45d7-88f0-fdfef5c58a71",
+      "name": "Wait",
+      "webhookId": "2439bc4d-f9de-42a8-b9d1-d24c242d2387"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "={{ $('Webhook').first().json.body.phone }}",
+        "message": "sms_appointment_reminders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        896,
+        0
+      ],
+      "id": "12dd4bd4-863b-472c-af54-aef018b6c4bd",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "bfc5acd6-f4fe-4067-9722-6841c5ecbe74",
+      "name": "Wait1",
+      "webhookId": "29d82680-77d8-4af4-997e-daf5dd4ee44d"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "={{ $('Webhook').first().json.body.phone }}",
+        "message": "sms_appointment_reminders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "88743c2a-89c0-43e4-92b3-aa7d02d4f005",
+      "name": "Send an SMS/MMS/WhatsApp message1",
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "f00dec07-0405-42c2-af44-36694a084e65",
+      "name": "Wait2",
+      "webhookId": "2c521cd7-8089-42c0-904e-82a324106829"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "={{ $('Webhook').first().json.body.phone }}",
+        "message": "sms_appointment_reminders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        0
+      ],
+      "id": "dea263c3-8186-439e-b176-9b266d25f149",
+      "name": "Send an SMS/MMS/WhatsApp message2",
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblYe2mMNVa5rjBGd",
+          "mode": "list",
+          "cachedResultName": "Post Treatment Log",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblYe2mMNVa5rjBGd"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "client": "= {{ $('Webhook').first().json.body.client_name }}",
+            "phone": "={{ $('Webhook').first().json.body.phone }}",
+            "treatment": "= {{ $('Webhook').first().json.body.treatment }}",
+            "Aftercare Sent At": "= {{ $now.toISO() }}",
+            "Review Sent At": "={{ $now.toISO() }}",
+            "Retention Sent At": "={{ $now.toISO() }}",
+            "status": "completed "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "client",
+              "displayName": "client",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "treatment",
+              "displayName": "treatment",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Aftercare Sent At",
+              "displayName": "Aftercare Sent At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Review Sent At",
+              "displayName": "Review Sent At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Retention Sent At",
+              "displayName": "Retention Sent At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        0
+      ],
+      "id": "c7aec2cb-2c98-440e-b1a5-c3b55ef59af4",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d3aaa2a7-e736-43d5-a55a-36aeeaeac2fb",
+              "leftValue": "={{$json.fields[\"treatment log\"]}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "08e19636-e330-4cd1-be7e-52a9aa9121dc",
+      "name": "Treatment Log Enabled?"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblMj9FySyKtPZNPA",
+          "mode": "list",
+          "cachedResultName": "Client configuration",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblMj9FySyKtPZNPA"
+        },
+        "filterByFormula": "{Client ID} = \"test-med-spa-001\"",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "3c0d7ea3-a3e1-4155-90a7-a75adfbff1e3",
+      "name": "Get Client Configuration",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Client Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message1": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message2": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Treatment Log Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Client Configuration": {
+      "main": [
+        [
+          {
+            "node": "Treatment Log Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0ae7bc45-cc94-4100-8899-f8ecb80ead3e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e69849f355253cf2b8ec15962bc0b86f6dc0e1476d5b65f1f9784f0593f144c3"
+  },
+  "nodeGroups": [],
+  "id": "uBmVzcv8Na3DoiYm",
+  "tags": []
+}
