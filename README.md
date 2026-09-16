@@ -68,3 +68,20 @@ Never commit:
 - Production secrets
 
 If a secret is accidentally committed, it should be revoked and replaced immediately rather than simply deleting it from the repository.
+## Tiered Automation Structure
+
+Ditch Manual now uses a client-level tier configuration in Airtable to control which n8n modules are active.
+
+### Basic Tier
+- Unified Intake Router
+- No-Show & Cancellation Recovery
+
+### Premium Tier
+- Unified Intake Router
+- No-Show & Cancellation Recovery
+- Maintenance Rebooking Engine
+- Post-Treatment Review & Retention
+
+Each workflow checks the client configuration before running. If a module is enabled, the workflow continues. If it is disabled, the workflow stops before the existing logic runs.
+
+This means a client can upgrade from Basic to Premium by updating the Airtable configuration only. The underlying n8n workflow does not need to be rebuilt.
