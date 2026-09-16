@@ -90,3 +90,16 @@ The earlier access-control audit showed why offboarding is important.
 A person who no longer works with DitchManual should not continue to have access to private workflow files or automation systems.
 
 Removing GitHub access quickly and rotating exposed credentials reduces the risk of unauthorized changes or data access.
+## Tiered Workflow Access
+
+The tiered automation setup uses Airtable client configuration to control which n8n modules are active for each client.
+
+Only authorized team members should have access to:
+- the n8n workflows
+- the Airtable Client Configuration table
+- workflow credentials and API keys
+- the GitHub repository containing workflow exports and documentation
+
+Changes to client tier settings should only be made by team members responsible for deployment or client configuration.
+
+Workflow exports in GitHub should not contain exposed credentials, API keys, tokens, or sensitive client data.
