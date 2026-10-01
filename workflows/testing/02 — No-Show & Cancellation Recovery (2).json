@@ -1,0 +1,959 @@
+{
+  "name": "02 — No-Show & Cancellation Recovery",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-recovery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8a4584a3-f81d-4112-a176-05d9131468ec",
+      "name": "Webhook",
+      "webhookId": "fc288fac-6817-42a7-bf70-4a1006c0a4dd"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cf9557bb-accd-4495-a9e6-666f945da1d0",
+              "leftValue": "={{ $node[\"Webhook\"].json[\"body\"][\"status\"] }}\n",
+              "rightValue": "no-show",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "9998bf49-2ba2-424a-810d-724b52e80625",
+              "leftValue": "={{ $node[\"Webhook\"].json[\"body\"][\"status\"] }}\n",
+              "rightValue": "cancelled",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "724e7f90-5f75-40c4-8fe6-5d7b18aa75b7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "={{ $node[\"Webhook\"].json[\"body\"][\"phone\"] || \"\" }}",
+        "message": "=Hi, we noticed you missed your appointment. Reply to rebook.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "ddca0fa0-659f-49d2-91e4-daa623734e30",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "retryOnFail": true,
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "48040f04-aced-47fc-9e5d-40bda8a29a68",
+      "name": "Wait",
+      "webhookId": "4d3ea49c-3655-453e-a845-bff7e7960d53"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "809c6855-86d2-484b-8b1f-991b0e570c95",
+              "leftValue": "={{ $json.rebooked }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        -96
+      ],
+      "id": "6d0e4f4a-bf51-423e-9909-8808f3b134c2",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "={{ $('Webhook').item.json.body.phone }}",
+        "message": "sms_appointment_reminders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "a7c43813-572f-429f-bcdd-320ccb34cfdb",
+      "name": "Send an SMS/MMS/WhatsApp message1",
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        0
+      ],
+      "id": "3b170a87-0d81-445d-bd57-9692660fc84d",
+      "name": "Wait1",
+      "webhookId": "9177b8f0-384f-47bf-bf5c-9295873c5ed8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a41534da-9fca-4500-97a9-8299b9f8adbe",
+              "leftValue": "={{ $json.rebooked }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2016,
+        0
+      ],
+      "id": "1e5996ef-89fc-4dbf-a2a9-2718a6543a10",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "from": "+4915888620339",
+        "to": "={{ $('Webhook').item.json.body.phone }}",
+        "message": "sms_appointment_reminders",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        96
+      ],
+      "id": "ec833b37-628a-4406-b94f-4a936a63e3f8",
+      "name": "Send an SMS/MMS/WhatsApp message2",
+      "credentials": {
+        "twilioApi": {
+          "id": "2e2kNvxIZItk43eS",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl1mmoeQ5Hd9yjpC",
+          "mode": "list",
+          "cachedResultName": "Recovery log",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tbl1mmoeQ5Hd9yjpC"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Appointment ID": "={{ $json.body.appointment_id }}",
+            "Client name": "={{ $json.body.client_name }}",
+            "Phone": "={{ $json.body.phone }}",
+            "Original status": "={{ $json.body.status }}",
+            "Outcome": "recovered ",
+            "Recovery started at ": "={{ $now.toISO() }}",
+            "Last follow up at ": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Appointment ID",
+              "displayName": "Appointment ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Client name",
+              "displayName": "Client name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Original status",
+              "displayName": "Original status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Outcome",
+              "displayName": "Outcome",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "recovered ",
+                  "value": "recovered "
+                },
+                {
+                  "name": "lost",
+                  "value": "lost"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Recovery started at ",
+              "displayName": "Recovery started at ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Last follow up at ",
+              "displayName": "Last follow up at ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1568,
+        -160
+      ],
+      "id": "b6a16b72-210c-46c7-9bd7-165916090b6c",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl1mmoeQ5Hd9yjpC",
+          "mode": "list",
+          "cachedResultName": "Recovery log",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tbl1mmoeQ5Hd9yjpC"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Appointment ID": "={{ $json.body.appointment_id }}",
+            "Client name": "={{ $json.body.client_name }}",
+            "Phone": "={{ $json.body.phone }}",
+            "Original status": "={{ $json.body.status }}",
+            "Outcome": "recovered ",
+            "Recovery started at ": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Appointment ID",
+              "displayName": "Appointment ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Client name",
+              "displayName": "Client name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Original status",
+              "displayName": "Original status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Outcome",
+              "displayName": "Outcome",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "recovered ",
+                  "value": "recovered "
+                },
+                {
+                  "name": "lost",
+                  "value": "lost"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Recovery started at ",
+              "displayName": "Recovery started at ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Last follow up at ",
+              "displayName": "Last follow up at ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        -96
+      ],
+      "id": "ecd01989-7fe8-467d-b5a9-d77534f6d698",
+      "name": "Create a record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl1mmoeQ5Hd9yjpC",
+          "mode": "list",
+          "cachedResultName": "Recovery log",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tbl1mmoeQ5Hd9yjpC"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Appointment ID": "={{ $json.body.appointment_id }}",
+            "Client name": "={{ $json.body.client_name }}",
+            "Phone": "={{ $json.body.phone }}",
+            "Original status": "={{ $json.body.status }}",
+            "Recovery started at ": "={{ $now.toISO() }}",
+            "Outcome": "lost",
+            "Last follow up at ": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Appointment ID",
+              "displayName": "Appointment ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Client name",
+              "displayName": "Client name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Original status",
+              "displayName": "Original status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Outcome",
+              "displayName": "Outcome",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "recovered ",
+                  "value": "recovered "
+                },
+                {
+                  "name": "lost",
+                  "value": "lost"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Attachment Summary",
+              "displayName": "Attachment Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Recovery started at ",
+              "displayName": "Recovery started at ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Last follow up at ",
+              "displayName": "Last follow up at ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        96
+      ],
+      "id": "e43f7d03-2957-45d1-972c-639ce7acc2a7",
+      "name": "Create a record2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apprVWgRIH6tOfQ2E",
+          "mode": "list",
+          "cachedResultName": "DM Automation Sandbox",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblMj9FySyKtPZNPA",
+          "mode": "list",
+          "cachedResultName": "Client configuration",
+          "cachedResultUrl": "https://airtable.com/apprVWgRIH6tOfQ2E/tblMj9FySyKtPZNPA"
+        },
+        "filterByFormula": "{Client ID} = \"test-med-spa-001\"",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "41c1a336-02e6-4aa1-bb42-734715cdc05a",
+      "name": "Get Client Configuration",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4Om8e59Y26ieuEhp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f0b649ce-5543-4b38-aebe-b31dc5e274c3",
+              "leftValue": "={{$json.fields[\"no show recovery \"]}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "4ba3d344-7168-4a5d-bbfe-03fe0faddd45",
+      "name": "No-Show Recovery Enabled?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stripe.com/v1/charges",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "amount",
+              "value": "2500"
+            },
+            {
+              "name": "currency ",
+              "value": "usd"
+            },
+            {
+              "name": "source ",
+              "value": "tok_visa"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2400,
+        -112
+      ],
+      "id": "0a658ff3-2c8a-422b-8e73-e1260e2d801c",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "sQQLXVSuVZJBBJuB",
+          "name": "Unnamed credential"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Client Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Create a record1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message2": {
+      "main": [
+        [
+          {
+            "node": "Create a record2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Client Configuration": {
+      "main": [
+        [
+          {
+            "node": "No-Show Recovery Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No-Show Recovery Enabled?": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "510792c5-0bad-40f4-84d4-69bb30a23974",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e69849f355253cf2b8ec15962bc0b86f6dc0e1476d5b65f1f9784f0593f144c3"
+  },
+  "nodeGroups": [],
+  "id": "xBGhxfFdEQrsdP7O",
+  "tags": []
+}
